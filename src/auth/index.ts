@@ -6,7 +6,12 @@
  * - OIDC providers (Google, Microsoft, Okta)
  * - API keys (scoped per workspace)
  *
- * Phase 1 implementation: Local accounts + API keys
+ * Phase 1 implementation: ✅ Complete
+ * - Local auth with bcrypt password hashing
+ * - JWT session tokens (15 min access + 7 day refresh)
+ * - API key generation and validation
+ * - Session management (create, validate, revoke)
+ *
  * Phase 5: SAML 2.0 for enterprise SSO
  */
 
@@ -38,7 +43,7 @@ export interface AuthSession {
 export interface ApiKey {
   id: string;
   name: string;
-  keyHash: string; // bcrypt hash of the key
+  keyHash: string; // SHA-256 hash of the key
   userId: string;
   orgId: string;
   workspaceScopes: string[]; // workspace IDs this key can access
@@ -48,9 +53,61 @@ export interface ApiKey {
   lastUsedAt: Date | null;
 }
 
-// TODO: Phase 1 implementation
-// - Local auth with bcrypt password hashing
-// - JWT session tokens (15 min access + 7 day refresh)
-// - API key generation and validation
-// - Session management (create, validate, revoke)
-// - Rate limiting on auth endpoints
+// Re-export all auth functions
+export {
+  // Database
+  getAuthDatabase,
+  initializeAuthDatabase,
+  cleanupExpiredAuth,
+} from "./database.js";
+
+export {
+  // Accounts
+  createAccount,
+  authenticateUser,
+  getUserById,
+  updatePassword,
+  updateUserRoles,
+  updateWorkspaceRoles,
+  deleteAccount,
+  type CreateAccountParams,
+} from "./accounts.js";
+
+export {
+  // Sessions
+  createSession,
+  refreshAccessToken,
+  revokeSession,
+  revokeAllSessions,
+  getUserSessions,
+  validateSession,
+} from "./sessions.js";
+
+export {
+  // API Keys
+  generateApiKeyString,
+  hashApiKey,
+  createApiKey,
+  validateApiKey,
+  revokeApiKey,
+  listApiKeys,
+} from "./api-keys.js";
+
+export {
+  // Password utilities
+  hashPassword,
+  verifyPassword,
+  validatePasswordStrength,
+} from "./password.js";
+
+export {
+  // Token utilities
+  generateAccessToken,
+  generateRefreshToken,
+  verifyAccessToken,
+  verifyRefreshToken,
+  getAccessTokenExpiry,
+  getRefreshTokenExpiry,
+  type AccessTokenPayload,
+  type RefreshTokenPayload,
+} from "./tokens.js";
