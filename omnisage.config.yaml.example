@@ -1,0 +1,125 @@
+# OmniSage Business Configuration
+# 
+# This is the ONLY config file you need to edit to get started.
+# Each department gets its own agent and communication channel.
+
+organization:
+  name: "Acme Corp"
+  timezone: "America/Chicago"
+  adminEmail: "admin@acme.com"
+
+# Departments - add as many as you need
+departments:
+  
+  # Sales team - connected via Slack
+  sales:
+    name: "Sales"
+    channel:
+      type: slack
+      id: "#sales"              # Slack channel name or ID
+      name: "Sales Team Channel"
+    agent: sales-ops            # Uses src/agents/templates/sales-ops.yaml
+    members:
+      - "alice@acme.com"
+      - "bob@acme.com"
+    integrations:
+      - crm
+      - email
+      - calendar
+  
+  # Customer support - email-based
+  support:
+    name: "Customer Support"
+    channel:
+      type: email
+      address: "support@acme.com"
+    agent: customer-support
+    members:
+      - "support-team@acme.com"
+    integrations:
+      - ticketing
+      - knowledgeBase
+      - email
+  
+  # Finance team - Microsoft Teams
+  finance:
+    name: "Finance"
+    channel:
+      type: teams
+      id: "19:meeting_finance_channel_id@thread.tacv2"
+      name: "Finance General"
+    agent: finance-ops
+    members:
+      - "cfo@acme.com"
+      - "controller@acme.com"
+    integrations:
+      - finance
+      - email
+  
+  # IT/Operations - Discord
+  ops:
+    name: "IT & Operations"
+    channel:
+      type: discord
+      id: "1234567890123456789"  # Discord channel ID
+      name: "IT Ops"
+    agent: it-ops
+    members:
+      - "sysadmin@acme.com"
+      - "devops@acme.com"
+  
+  # HR/People team - Telegram
+  hr:
+    name: "Human Resources"
+    channel:
+      type: telegram
+      id: "-1001234567890"        # Telegram group chat ID
+      name: "HR Team"
+    agent: hr-people
+    members:
+      - "hr@acme.com"
+
+# Shared integrations available to all departments
+integrations:
+  crm:
+    provider: salesforce          # or: hubspot, pipedrive
+    credentialRef: SALESFORCE_API_KEY
+  
+  email:
+    provider: gmail               # or: outlook, smtp
+    credentialRef: GMAIL_API_CREDENTIALS
+  
+  calendar:
+    provider: google              # or: microsoft, caldav
+    credentialRef: GOOGLE_CALENDAR_API_KEY
+  
+  ticketing:
+    provider: zendesk             # or: freshdesk, linear
+    credentialRef: ZENDESK_API_TOKEN
+  
+  finance:
+    provider: quickbooks          # or: xero, stripe
+    credentialRef: QUICKBOOKS_API_KEY
+  
+  knowledgeBase:
+    provider: notion              # or: confluence, gitbook
+    credentialRef: NOTION_API_KEY
+
+# Global policies
+policies:
+  # Require human approval for these actions
+  requireApproval:
+    - email_send                  # Agents draft, humans review and send
+    - crm_update                  # CRM writes need approval
+    - payment                     # Any financial transaction
+  
+  # Default LLM model (can override per department)
+  defaultModel: "claude-sonnet-4"
+  
+  # Audit logging
+  auditEnabled: true
+  dataRetentionDays: 90
+  
+  # Allow agents to share context across departments
+  # (e.g., Sales can see support tickets for their accounts)
+  crossDepartmentContext: false

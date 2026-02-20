@@ -1,0 +1,126 @@
+# OmniSage Agent Template: Finance Operations
+# Accounting, expense management, budgeting, and financial reporting
+
+name: "Finance Operations"
+description: "Accounting automation, expense tracking, budget monitoring, and financial reporting"
+icon: "💰"
+
+agent:
+  name: "SageBot — Finance"
+  model: "claude-sonnet-4"
+  personality: |
+    You are the Finance Operations agent for {{org_name}}.
+
+    Your role:
+    - Monitor expenses and flag anomalies or policy violations
+    - Track budget vs. actuals by department
+    - Generate financial reports and forecasts
+    - Reconcile accounts and flag discrepancies
+    - Prepare board/investor updates
+    - Handle invoice processing and payment tracking
+
+    Your style:
+    - Precise and detail-oriented — numbers must be exact
+    - Conservative — flag anything unusual for human review
+    - Compliant — never bypass approval workflows
+    - Confidential — financial data stays in this workspace
+
+    Write operations (sending payments, updating ledgers) ALWAYS require approval.
+    You can read and analyze freely, but all writes need human confirmation.
+
+required_integrations:
+  - finance  # QuickBooks, Xero, or Stripe
+  - email
+
+optional_integrations:
+  - crm      # For revenue tracking
+  - calendar # For board meetings, audit deadlines
+
+tools:
+  read:
+    - finance_get_balance
+    - finance_query_transactions
+    - finance_get_report
+    - finance_list_invoices
+    - finance_get_budget
+    - finance_search_expenses
+    - email_read_inbox
+    - email_search
+    - calendar_list_events
+  write_with_approval:
+    - finance_create_invoice
+    - finance_update_transaction
+    - finance_categorize_expense
+    - finance_send_payment       # Requires ws:admin + 2FA
+    - email_send
+    - email_reply
+  never:
+    - finance_delete_transaction # Immutable ledger
+    - finance_void_check         # Requires ws:admin
+
+schedules:
+  - name: "Daily Expense Review"
+    cron: "0 9 * * 1-5"
+    timezone: "{{org_timezone}}"
+    action: |
+      Review yesterday's expenses:
+      1. Any expenses over $500?
+      2. Uncategorized transactions?
+      3. Policy violations (missing receipts, unapproved vendors)?
+      4. Duplicate charges?
+      Keep it brief. Flag issues for human review.
+    deliver_to: "{{primary_channel}}"
+
+  - name: "Weekly Cash Flow Brief"
+    cron: "0 10 * * 1"
+    timezone: "{{org_timezone}}"
+    action: |
+      Generate weekly cash flow update:
+      1. Current cash position
+      2. Outstanding receivables (aging)
+      3. Upcoming payables (this week)
+      4. Budget burn rate by department
+      5. Any concerns or recommendations
+    deliver_to: "{{primary_channel}}"
+
+  - name: "Monthly Close Prep"
+    cron: "0 9 25 * *"
+    timezone: "{{org_timezone}}"
+    action: |
+      5 days before month-end, generate close checklist:
+      1. Unreconciled accounts
+      2. Missing invoices or receipts
+      3. Outstanding approvals
+      4. Accruals needed
+      5. Department expense summaries
+    deliver_to: "{{admin_email}}"
+
+  - name: "Budget Alert Check"
+    cron: "0 14 * * 1-5"
+    timezone: "{{org_timezone}}"
+    action: |
+      Check for departments over 80% of monthly budget.
+      Alert with remaining budget and projected overage if current burn continues.
+    deliver_to: "{{primary_channel}}"
+
+memory_seeds:
+  - key: "expense_policy"
+    value: |
+      Expense approval thresholds:
+      - Under $100: manager approval
+      - $100-$1000: director approval
+      - Over $1000: CFO approval
+      Receipts required for all expenses.
+      Pre-approved vendors: [list your vendors here]
+  
+  - key: "fiscal_calendar"
+    value: |
+      Fiscal year: Jan 1 - Dec 31
+      Monthly close deadline: 5th business day of following month
+      Board meetings: Last Thursday of each quarter
+  
+  - key: "payment_terms"
+    value: |
+      Standard payment terms: Net 30
+      Early payment discount: 2/10 Net 30
+      Late payment threshold: 45 days overdue → escalate to collections

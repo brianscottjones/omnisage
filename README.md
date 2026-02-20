@@ -24,71 +24,127 @@ Your business runs on 10-20 different tools. Your team spends hours copying data
 
 ## Quick Start
 
+**Get running in 3 steps:**
+
+### 1. Clone and Configure
+
 ```bash
-# Clone the repo
 git clone https://github.com/brianscottjones/omnisage.git
 cd omnisage
 
-# Copy and configure environment
-cp .env.example .env
-# Edit .env with your LLM API keys and settings
-
-# Start with Docker Compose
-docker compose up -d
-
-# Open the admin dashboard
-open http://localhost:3000
+# Edit the single config file — that's it!
+cp omnisage.config.yaml.example omnisage.config.yaml
 ```
+
+Edit `omnisage.config.yaml` with your business details:
+
+```yaml
+organization:
+  name: "Your Company"
+  timezone: "America/Chicago"
+
+departments:
+  sales:
+    name: "Sales"
+    channel: { type: slack, id: "#sales" }
+    agent: sales-ops
+    members: ["alice@company.com", "bob@company.com"]
+  
+  support:
+    channel: { type: email, address: "support@company.com" }
+    agent: customer-support
+  
+  # Add more departments as needed...
+```
+
+### 2. Add Credentials
+
+```bash
+cp .env.example .env
+# Add your LLM API key and channel credentials
+```
+
+### 3. Start
+
+```bash
+docker compose up -d
+# Or: pnpm install && pnpm build && pnpm start
+```
+
+**That's it.** Your agents are live.
+
+➡️ **Full setup guide:** [docs/SETUP.md](./docs/SETUP.md)
 
 ## Architecture Overview
 
+**One config file. Multiple channels. Department-specific agents.**
+
 ```
-Users (Slack, Email, Web UI, API)
-         │
-    ┌────┴────┐
-    │ Gateway  │ ← Auth + Rate Limiting + Audit
-    │ Router   │
-    └────┬────┘
-         │
-    ┌────┴────────────────┐
-    │  Agent Orchestrator  │ ← Routes to department agents
-    ├─────────────────────┤
-    │ Sales │ Ops │ Finance│ ← Role-scoped agents
-    │ HR    │ IT  │ Exec   │
-    └────┬────────────────┘
-         │
-    ┌────┴────────────────┐
-    │   Shared Services    │
-    ├─────────────────────┤
-    │ Memory │ Secrets     │
-    │ Audit  │ Integrations│
-    └─────────────────────┘
+┌─────────────────────────────────────┐
+│    omnisage.config.yaml             │  ← Single source of truth
+│    (Simple business configuration)  │
+└─────────────┬───────────────────────┘
+              │
+         ┌────┴────┐
+         ↓         ↓
+    [Slack]   [Teams]  [Discord]  [Email]  [Telegram]
+      ↓         ↓         ↓          ↓          ↓
+    Department Agents (isolated workspaces)
+      ↓         ↓         ↓          ↓          ↓
+    Sales    Support  Finance      IT         HR
 ```
+
+**Key Principles:**
+
+- **Config-driven, not code-driven** — Business admins can set this up
+- **Channel choice is just a config line** — Switch platforms with one edit
+- **Department isolation** — Each team has their own agent and data
+- **Approval gates** — Sensitive actions require human review
 
 ## Key Concepts
 
-### Workspaces
-An OmniSage deployment serves one **organization**. Within that org, you create **workspaces** per team/department. Each workspace has its own agent, memory, tools, and access policies.
+### Departments = Workspaces
+Each department in your config gets its own isolated workspace with:
+- **Dedicated agent** using a pre-built template (Sales, Support, Finance, IT, HR)
+- **Private memory** — other departments can't see their data
+- **Channel integration** — Slack, Teams, Discord, Email, or Telegram
+- **Role-specific tools** — Sales accesses CRM, Finance accesses QuickBooks
 
-### Agents
-Each workspace runs one or more **agents** — AI personas configured with specific tools, memory access, and behavioral guidelines. A Sales agent can access the CRM but not payroll. An HR agent can access PTO records but not financial accounts.
+### Pre-Built Agent Templates
+OmniSage includes battle-tested templates:
+- **sales-ops** — Pipeline management, lead scoring, deal tracking
+- **customer-support** — Ticket triage, KB search, SLA monitoring
+- **finance-ops** — Expense tracking, budget alerts, reporting
+- **it-ops** — System monitoring, incident response, asset management
+- **hr-people** — Recruiting, onboarding, PTO tracking
 
-### Memory Layers
-- **Organization Memory** — company-wide knowledge (policies, product info, org chart)
-- **Workspace Memory** — team-specific context (deals pipeline, support tickets, sprint goals)
-- **Session Memory** — conversation-level context (ephemeral)
+Customize templates by editing YAML files in `src/agents/templates/`.
+
+### Channel Abstraction
+Switch communication platforms with one config line:
+```yaml
+channel: { type: slack, id: "#sales" }      # Slack
+channel: { type: teams, id: "finance-gen" }  # Microsoft Teams
+channel: { type: email, address: "support@company.com" }  # Email
+```
+The agent behavior stays the same. Only the delivery changes.
 
 ### Approval Gates
-Sensitive actions (sending emails, updating CRM records, processing payments) require human approval. Configure per-action, per-workspace, or per-agent.
+Configure which actions require human approval:
+```yaml
+policies:
+  requireApproval:
+    - email_send      # Agents draft, humans send
+    - crm_update      # No automated CRM changes
+    - payment         # All payments require confirmation
+```
 
 ### Audit Trail
-Every agent action — tool calls, memory reads/writes, external API calls — is logged with:
-- Timestamp
-- User who triggered (or cron/automation)
-- Agent that executed
-- Action taken + parameters
-- Result
-- Approval chain (if applicable)
+Every agent action is logged for compliance:
+- What happened, when, by whom
+- Action parameters and result
+- Approval chain (if required)
+- Full context for incident review
 
 ## Integrations
 

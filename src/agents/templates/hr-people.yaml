@@ -1,0 +1,173 @@
+# OmniSage Agent Template: HR & People Operations
+# Recruiting, onboarding, time tracking, PTO management, and employee support
+
+name: "HR & People Operations"
+description: "Recruiting pipeline, onboarding, PTO tracking, employee support, and compliance"
+icon: "👥"
+
+agent:
+  name: "SageBot — HR"
+  model: "claude-sonnet-4"
+  personality: |
+    You are the HR & People Operations agent for {{org_name}}.
+
+    Your role:
+    - Support recruiting pipeline and candidate coordination
+    - Automate employee onboarding and offboarding workflows
+    - Track PTO requests and balances
+    - Answer employee policy questions
+    - Flag compliance issues (I-9, background checks, etc.)
+    - Maintain employee records and org chart
+
+    Your style:
+    - Empathetic and approachable — HR is about people
+    - Confidential — employee data is highly sensitive
+    - Consistent — apply policies fairly across all employees
+    - Proactive — surface issues before they become problems
+
+    NEVER share employee personal information outside this workspace.
+    Salary, performance reviews, and disciplinary actions require ws:admin access.
+
+required_integrations:
+  - hris       # BambooHR, Workday, or Gusto
+  - email
+  - calendar
+
+optional_integrations:
+  - ats        # Applicant tracking system (Lever, Greenhouse)
+  - slack      # For employee notifications
+
+tools:
+  read:
+    - hris_get_employee
+    - hris_list_employees
+    - hris_get_pto_balance
+    - hris_list_pto_requests
+    - hris_get_org_chart
+    - ats_list_candidates
+    - ats_get_candidate
+    - email_read_inbox
+    - calendar_list_events
+    - calendar_find_free_time
+  write_with_approval:
+    - hris_update_employee         # For address, emergency contact, etc.
+    - hris_approve_pto
+    - hris_create_pto_request
+    - ats_update_candidate_status
+    - ats_schedule_interview
+    - email_send
+    - email_reply
+    - calendar_create_event
+  never:
+    - hris_update_salary           # Requires ws:admin
+    - hris_terminate_employee      # Requires ws:admin
+    - hris_delete_record           # Immutable records
+
+schedules:
+  - name: "Morning PTO Review"
+    cron: "0 8 * * 1-5"
+    timezone: "{{org_timezone}}"
+    action: |
+      PTO management update:
+      1. New PTO requests awaiting approval
+      2. Employees out today (for team visibility)
+      3. Upcoming PTO (next 7 days)
+      4. PTO policy violations (negative balance, blackout dates)
+    deliver_to: "{{primary_channel}}"
+
+  - name: "Recruiting Pipeline Check"
+    cron: "0 9 * * 1,3,5"
+    timezone: "{{org_timezone}}"
+    action: |
+      Recruiting pipeline update (Mon/Wed/Fri):
+      1. Candidates in each stage (Applied → Offer)
+      2. Interviews scheduled this week
+      3. Overdue follow-ups (candidates waiting >3 days)
+      4. Offer acceptance status
+      Keep it concise. Flag any bottlenecks.
+    deliver_to: "{{primary_channel}}"
+
+  - name: "Onboarding Checklist"
+    cron: "0 9 * * 1"
+    timezone: "{{org_timezone}}"
+    action: |
+      For employees starting this week or recently started (last 2 weeks):
+      1. Verify onboarding checklist completion
+      2. IT setup complete?
+      3. Manager 1:1 scheduled?
+      4. Benefits enrollment complete?
+      5. First-week survey sent?
+      Flag any incomplete items.
+    deliver_to: "{{primary_channel}}"
+
+  - name: "Compliance Check"
+    cron: "0 9 1 * *"
+    timezone: "{{org_timezone}}"
+    action: |
+      Monthly compliance review:
+      1. I-9 forms for new hires (within 3 days of start)
+      2. Background checks pending (should complete within 14 days)
+      3. Sexual harassment training status (annual requirement)
+      4. Employee handbook acknowledgments
+      5. Expiring certifications (if applicable)
+    deliver_to: "{{admin_email}}"
+
+  - name: "Anniversary Recognition"
+    cron: "0 8 * * 1"
+    timezone: "{{org_timezone}}"
+    action: |
+      Check for work anniversaries this week.
+      Generate recognition message with tenure milestone.
+      Remind manager to acknowledge publicly.
+    deliver_to: "{{primary_channel}}"
+
+  - name: "Birthday Reminder"
+    cron: "0 8 * * *"
+    timezone: "{{org_timezone}}"
+    action: |
+      Today's birthdays. Send cheerful reminder to team.
+    deliver_to: "{{primary_channel}}"
+
+memory_seeds:
+  - key: "pto_policy"
+    value: |
+      PTO accrual:
+      - 0-2 years: 15 days/year
+      - 2-5 years: 20 days/year
+      - 5+ years: 25 days/year
+      
+      PTO rules:
+      - Manager approval required (submit 1 week in advance for >3 days)
+      - No negative balances
+      - Blackout dates: [list company blackout dates]
+      - Max rollover: 5 days to next year
+  
+  - key: "recruiting_process"
+    value: |
+      Standard hiring pipeline:
+      1. Applied
+      2. Phone Screen (30 min with HR)
+      3. Technical Interview (1 hour with hiring manager)
+      4. Team Interview (2-3 hours with 3-4 team members)
+      5. Final Round / Leadership (30 min with exec)
+      6. Offer
+      
+      SLA: Respond to candidates within 2 business days at each stage.
+  
+  - key: "onboarding_checklist"
+    value: |
+      New hire onboarding (Day 1):
+      - Welcome email sent (1 week before start)
+      - IT equipment ready
+      - Email/Slack accounts created
+      - Manager intro meeting scheduled
+      - Benefits enrollment packet sent
+      
+      Week 1:
+      - HR orientation
+      - Benefits enrollment
+      - Handbook review + signature
+      - Team introductions
+      
+      30-day check-in: Manager + HR
+      90-day review: Performance expectations alignment

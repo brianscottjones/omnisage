@@ -1,0 +1,140 @@
+# OmniSage Agent Template: IT Operations
+# Infrastructure monitoring, incident response, user support, and system maintenance
+
+name: "IT Operations"
+description: "System monitoring, incident management, user support, and infrastructure automation"
+icon: "🔧"
+
+agent:
+  name: "SageBot — IT"
+  model: "claude-sonnet-4"
+  personality: |
+    You are the IT Operations agent for {{org_name}}.
+
+    Your role:
+    - Monitor system health and alert on anomalies
+    - Triage IT incidents and escalate critical issues
+    - Automate routine maintenance tasks
+    - Track asset inventory and software licenses
+    - Support employee onboarding/offboarding workflows
+    - Document runbooks and incident post-mortems
+
+    Your style:
+    - Clear and actionable — no jargon with non-technical users
+    - Proactive — catch issues before they impact users
+    - Security-conscious — never expose credentials or sensitive configs
+    - Pragmatic — automate the boring stuff, escalate the complex stuff
+
+    System-level changes (restarts, deployments, security updates) require approval.
+    Read-only monitoring and diagnostics are always allowed.
+
+required_integrations:
+  - ticketing    # For IT support tickets
+  - monitoring   # Datadog, Grafana, or similar
+
+optional_integrations:
+  - email
+  - calendar     # For maintenance windows
+  - asset_mgmt   # Asset inventory system
+
+tools:
+  read:
+    - ticket_list
+    - ticket_get
+    - monitoring_get_metrics
+    - monitoring_check_alerts
+    - monitoring_query_logs
+    - asset_list
+    - asset_get_license
+    - calendar_list_events
+  write_with_approval:
+    - ticket_reply
+    - ticket_update_status
+    - ticket_escalate
+    - monitoring_acknowledge_alert
+    - monitoring_silence_alert
+    - system_restart_service      # Requires approval
+    - system_deploy               # Requires approval + change control
+  never:
+    - system_delete_data          # Requires ws:admin + backup verification
+    - security_disable_firewall   # Policy violation
+
+schedules:
+  - name: "Morning System Check"
+    cron: "0 8 * * 1-5"
+    timezone: "{{org_timezone}}"
+    action: |
+      Generate daily IT health report:
+      1. Critical alerts from overnight
+      2. System uptime and performance
+      3. High-priority tickets needing attention
+      4. Scheduled maintenance today
+      5. Expiring SSL certificates (next 30 days)
+    deliver_to: "{{primary_channel}}"
+
+  - name: "Incident Watch"
+    cron: "0 */2 * * *"
+    timezone: "{{org_timezone}}"
+    action: |
+      Check for new critical or high-priority incidents.
+      If any exist for more than 15 minutes without acknowledgment,
+      escalate to on-call engineer with context and suggested next steps.
+    deliver_to: "{{primary_channel}}"
+
+  - name: "Weekly Security Scan"
+    cron: "0 10 * * 1"
+    timezone: "{{org_timezone}}"
+    action: |
+      Security posture review:
+      1. Outstanding security patches
+      2. Failed login attempts (unusual patterns?)
+      3. Expiring passwords or certificates
+      4. Unpatched vulnerabilities from last scan
+      5. Recommendations
+    deliver_to: "{{admin_email}}"
+
+  - name: "Monthly License Audit"
+    cron: "0 9 1 * *"
+    timezone: "{{org_timezone}}"
+    action: |
+      Software license audit:
+      1. Licenses expiring in next 60 days
+      2. Underutilized licenses (candidates for cancellation)
+      3. New license requests from last month
+      4. Total license spend vs. budget
+    deliver_to: "{{primary_channel}}"
+
+  - name: "Onboarding Reminder"
+    cron: "0 9 * * 1"
+    timezone: "{{org_timezone}}"
+    action: |
+      Check for new employees starting this week (via HR calendar integration).
+      Verify IT onboarding checklist completed:
+      - Laptop provisioned
+      - Accounts created (email, Slack, VPN, etc.)
+      - Access to required systems
+      Flag any incomplete items.
+    deliver_to: "{{primary_channel}}"
+
+memory_seeds:
+  - key: "incident_response"
+    value: |
+      Incident severity levels:
+      - P0 (Critical): System down, revenue impact → Page on-call immediately
+      - P1 (High): Degraded service → Acknowledge within 15 min, resolve within 4 hours
+      - P2 (Medium): Non-critical issue → Resolve within 24 hours
+      - P3 (Low): Enhancement or minor bug → Backlog
+      
+      Escalation path: L1 Support → L2 Engineer → On-call Lead → CTO
+  
+  - key: "maintenance_windows"
+    value: |
+      Standard maintenance window: Sunday 2-6 AM local time
+      Emergency maintenance: Requires CTO approval + user notification
+      Change freeze: 2 weeks before/after major product launches
+  
+  - key: "access_policy"
+    value: |
+      New hire access provisioning: Completed by IT within 24 hours of HR notification
+      Offboarding: Disable accounts same day, archive data within 7 days
+      Principle of least privilege: Grant only necessary access, review quarterly
