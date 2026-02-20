@@ -54,7 +54,7 @@ export interface WorkspaceMember {
 }
 
 export interface WorkspaceChannel {
-  type: 'slack' | 'email' | 'teams' | 'telegram' | 'api';
+  type: 'slack' | 'email' | 'teams' | 'telegram' | 'api' | 'discord';
   channelId: string;
   mode: 'active' | 'inbox' | 'notify_only';
   config: Record<string, unknown>;
@@ -76,9 +76,8 @@ export interface WorkspacePolicies {
   retentionDays: number;
 }
 
-// TODO: Phase 1 implementation
-// - CRUD operations for workspaces
-// - Member management
-// - Configuration validation
-// - Workspace provisioning (memory namespace, audit partition)
-// - Channel routing
+// Export implementation modules
+export { WorkspaceManager, type CreateWorkspaceInput, type UpdateWorkspaceInput } from './manager.js';
+export { WorkspaceProvisioner, type ProvisioningResult } from './provisioner.js';
+export { validateWorkspaceConfig, WorkspaceValidationError, type ValidationError } from './validator.js';
+export { loadWorkspacesFromConfig, reloadWorkspaces, type LoadedWorkspaces } from './config-loader.js';
