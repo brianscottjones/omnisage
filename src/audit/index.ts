@@ -82,10 +82,18 @@ export interface AuditQuery {
   offset?: number;
 }
 
-// TODO: Phase 1 implementation
-// - JSONL file-based audit log (append-only)
-// - In-memory buffer with periodic flush
-// - Query interface for admin dashboard
-// - PII redaction in logged parameters
-// - Retention policy enforcement
-// - SIEM export webhook (Phase 4)
+// Exports
+export { AuditLogger, type AuditLoggerConfig } from './audit-logger.js';
+export { QueryEngine } from './query-engine.js';
+export {
+  RetentionPolicy,
+  type RetentionConfig,
+  type RetentionResult,
+  type RetentionStats,
+} from './retention-policy.js';
+export {
+  PIIRedactor,
+  type RedactionPattern,
+  DEFAULT_REDACTION_PATTERNS,
+  defaultRedactor,
+} from './pii-redactor.js';
