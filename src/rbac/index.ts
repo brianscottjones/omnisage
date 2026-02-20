@@ -53,9 +53,9 @@ export interface AccessDecision {
   policyId?: string;
 }
 
-// TODO: Phase 1 implementation
-// - Role hierarchy resolution
-// - Permission evaluation engine
-// - Approval workflow integration
-// - Policy caching for performance
-// - Audit logging of all access decisions
+// Export core modules
+export * from './role-hierarchy.js';
+export * from './permission-engine.js';
+export * from './approval-workflow.js';
+export * from './policy-cache.js';
+export * from './audit-integration.js';
