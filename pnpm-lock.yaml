@@ -50,17 +50,17 @@ importers:
         specifier: 1.2.0-beta.3
         version: 1.2.0-beta.3
       '@mariozechner/pi-agent-core':
-        specifier: 0.53.0
-        version: 0.53.0(ws@8.19.0)(zod@4.3.6)
+        specifier: 0.54.0
+        version: 0.54.0(ws@8.19.0)(zod@4.3.6)
       '@mariozechner/pi-ai':
-        specifier: 0.53.0
-        version: 0.53.0(ws@8.19.0)(zod@4.3.6)
+        specifier: 0.54.0
+        version: 0.54.0(ws@8.19.0)(zod@4.3.6)
       '@mariozechner/pi-coding-agent':
-        specifier: 0.53.0
-        version: 0.53.0(ws@8.19.0)(zod@4.3.6)
+        specifier: 0.54.0
+        version: 0.54.0(ws@8.19.0)(zod@4.3.6)
       '@mariozechner/pi-tui':
-        specifier: 0.53.0
-        version: 0.53.0
+        specifier: 0.54.0
+        version: 0.54.0
       '@mozilla/readability':
         specifier: ^0.6.0
         version: 0.6.0
@@ -1478,22 +1478,22 @@ packages:
     resolution: {integrity: sha512-faGUlTcXka5l7rv0lP3K3vGW/ejRuOS24RR2aSFWREUQqzjgdsuWNo/IiPqL3kWRGt6Ahl2+qcDAwtdeWeuGUw==}
     hasBin: true
 
-  '@mariozechner/pi-agent-core@0.53.0':
-    resolution: {integrity: sha512-LswcyVHrW2LfRRGU8xXp69/7oTt6iXCmphZC2w46emPbFNK/lMR10INfkDt1HB59/0UqrLvoZRznutg4wwJriw==}
+  '@mariozechner/pi-agent-core@0.54.0':
+    resolution: {integrity: sha512-LsPoudpOJLj7JjSpjlAdLM5uA2iy8nP+4nA6Si1ASD3tMqXdjHzNaKNloGSODKJO+3O3yhwPMSbuk78CCnZteQ==}
     engines: {node: '>=20.0.0'}
 
-  '@mariozechner/pi-ai@0.53.0':
-    resolution: {integrity: sha512-f6dIzxLoVlB7TrT18N48oEUKzyoTw/ujB5zLxklFtpgaCVj9TRVf5manpT+2OYFwq3B6KANJ8X3WfDNCiKBEhA==}
-    engines: {node: '>=20.0.0'}
-    hasBin: true
-
-  '@mariozechner/pi-coding-agent@0.53.0':
-    resolution: {integrity: sha512-phqo3A7WuKUTZ/HVtVQyWfaHrezVgeAdDc0hc9sw9d4gT4djVtCCOrD3cUtkyo6bYvGYKAD+aWL5bi5RMmCQew==}
+  '@mariozechner/pi-ai@0.54.0':
+    resolution: {integrity: sha512-XHhMIbFFHCa4mbiYdttfhVg6r3VmFD5tAiW4tjnmf33FhLUCRd76bGMQRc4kLWXPKCi/U4nqAErvaGiZUY4B8A==}
     engines: {node: '>=20.0.0'}
     hasBin: true
 
-  '@mariozechner/pi-tui@0.53.0':
-    resolution: {integrity: sha512-ffma5Xj6DTN8FWA+6jM5tDiFicF/NnyNSwPH0vw2oqkXqlXt1zSSM9FymZIbSjDLW+A/f1zMvAHORhFIeQTBJQ==}
+  '@mariozechner/pi-coding-agent@0.54.0':
+    resolution: {integrity: sha512-CO8uLmigLzzep2i5/f05dchyywDYDsqykLxpaMXbwDa/dDzsBRbuWoGQBOAsiGbcCMya6AT5nAggFFo4Aqy/+g==}
+    engines: {node: '>=20.0.0'}
+    hasBin: true
+
+  '@mariozechner/pi-tui@0.54.0':
+    resolution: {integrity: sha512-bvFlUohdxDvKcFeQM2xsd5twCGKWxVaYSlHCFljIW0KqMC4vU+/Ts4A1i9iDnm6Xe/MlueKvC0V09YeC8fLIHA==}
     engines: {node: '>=20.0.0'}
 
   '@matrix-org/matrix-sdk-crypto-nodejs@0.4.0':
@@ -6906,7 +6906,7 @@ snapshots:
 
   '@larksuiteoapi/node-sdk@1.59.0':
     dependencies:
-      axios: 1.13.5(debug@4.4.3)
+      axios: 1.13.5
       lodash.identity: 3.0.0
       lodash.merge: 4.6.2
       lodash.pickby: 4.6.0
@@ -6922,7 +6922,7 @@ snapshots:
     dependencies:
       '@types/node': 24.10.13
     optionalDependencies:
-      axios: 1.13.5(debug@4.4.3)
+      axios: 1.13.5
     transitivePeerDependencies:
       - debug
 
@@ -7017,9 +7017,9 @@ snapshots:
       std-env: 3.10.0
       yoctocolors: 2.1.2
 
-  '@mariozechner/pi-agent-core@0.53.0(ws@8.19.0)(zod@4.3.6)':
+  '@mariozechner/pi-agent-core@0.54.0(ws@8.19.0)(zod@4.3.6)':
     dependencies:
-      '@mariozechner/pi-ai': 0.53.0(ws@8.19.0)(zod@4.3.6)
+      '@mariozechner/pi-ai': 0.54.0(ws@8.19.0)(zod@4.3.6)
     transitivePeerDependencies:
       - '@modelcontextprotocol/sdk'
       - aws-crt
@@ -7029,7 +7029,7 @@ snapshots:
       - ws
       - zod
 
-  '@mariozechner/pi-ai@0.53.0(ws@8.19.0)(zod@4.3.6)':
+  '@mariozechner/pi-ai@0.54.0(ws@8.19.0)(zod@4.3.6)':
     dependencies:
       '@anthropic-ai/sdk': 0.73.0(zod@4.3.6)
       '@aws-sdk/client-bedrock-runtime': 3.992.0
@@ -7053,12 +7053,12 @@ snapshots:
       - ws
       - zod
 
-  '@mariozechner/pi-coding-agent@0.53.0(ws@8.19.0)(zod@4.3.6)':
+  '@mariozechner/pi-coding-agent@0.54.0(ws@8.19.0)(zod@4.3.6)':
     dependencies:
       '@mariozechner/jiti': 2.6.5
-      '@mariozechner/pi-agent-core': 0.53.0(ws@8.19.0)(zod@4.3.6)
-      '@mariozechner/pi-ai': 0.53.0(ws@8.19.0)(zod@4.3.6)
-      '@mariozechner/pi-tui': 0.53.0
+      '@mariozechner/pi-agent-core': 0.54.0(ws@8.19.0)(zod@4.3.6)
+      '@mariozechner/pi-ai': 0.54.0(ws@8.19.0)(zod@4.3.6)
+      '@mariozechner/pi-tui': 0.54.0
       '@silvia-odwyer/photon-node': 0.3.4
       chalk: 5.6.2
       cli-highlight: 2.1.11
@@ -7082,7 +7082,7 @@ snapshots:
       - ws
       - zod
 
-  '@mariozechner/pi-tui@0.53.0':
+  '@mariozechner/pi-tui@0.54.0':
     dependencies:
       '@types/mime-types': 2.1.4
       chalk: 5.6.2
@@ -7126,7 +7126,7 @@ snapshots:
       '@azure/core-auth': 1.10.1
       '@azure/msal-node': 3.8.7
       '@microsoft/agents-activity': 1.2.3
-      axios: 1.13.5(debug@4.4.3)
+      axios: 1.13.5
       jsonwebtoken: 9.0.3
       jwks-rsa: 3.2.2
       object-path: 0.11.8
@@ -8073,7 +8073,7 @@ snapshots:
       '@slack/types': 2.20.0
       '@slack/web-api': 7.14.1
       '@types/express': 5.0.6
-      axios: 1.13.5(debug@4.4.3)
+      axios: 1.13.5
       express: 5.2.1
       path-to-regexp: 8.3.0
       raw-body: 3.0.2
@@ -8119,7 +8119,7 @@ snapshots:
       '@slack/types': 2.20.0
       '@types/node': 25.2.3
       '@types/retry': 0.12.0
-      axios: 1.13.5(debug@4.4.3)
+      axios: 1.13.5
       eventemitter3: 5.0.4
       form-data: 2.5.4
       is-electron: 2.2.2
@@ -9001,6 +9001,14 @@ snapshots:
 
   aws4@1.13.2: {}
 
+  axios@1.13.5:
+    dependencies:
+      follow-redirects: 1.15.11
+      form-data: 2.5.4
+      proxy-from-env: 1.1.0
+    transitivePeerDependencies:
+      - debug
+
   axios@1.13.5(debug@4.4.3):
     dependencies:
       follow-redirects: 1.15.11(debug@4.4.3)
@@ -9571,6 +9579,8 @@ snapshots:
       array-back: 3.1.0
 
   flatbuffers@24.12.23: {}
+
+  follow-redirects@1.15.11: {}
 
   follow-redirects@1.15.11(debug@4.4.3):
     optionalDependencies:
