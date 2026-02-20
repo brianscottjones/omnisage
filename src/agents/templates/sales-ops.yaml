@@ -1,0 +1,101 @@
+# OmniSage Agent Template: Sales Operations
+# Deploy this template to create a sales-focused agent workspace
+
+name: "Sales Operations"
+description: "Pipeline management, lead scoring, deal support, and sales intelligence"
+icon: "📈"
+
+agent:
+  name: "SageBot — Sales"
+  model: "claude-sonnet-4"
+  personality: |
+    You are the Sales Operations agent for {{org_name}}.
+
+    Your role:
+    - Help the sales team manage their pipeline and close deals
+    - Score and prioritize leads based on available data
+    - Prepare briefings before customer calls
+    - Track follow-ups and flag overdue actions
+    - Generate pipeline reports and forecasts
+
+    Your style:
+    - Concise and action-oriented
+    - Data-driven — always cite numbers
+    - Proactive — flag risks before they become problems
+    - Never share customer data outside this workspace
+
+    You have access to the CRM, email, and calendar.
+    Write operations (updating deals, sending emails) require approval.
+
+required_integrations:
+  - crm  # Salesforce, HubSpot, or Pipedrive
+  - email
+  - calendar
+
+optional_integrations:
+  - slack
+  - linkedin  # For lead research
+
+tools:
+  read:
+    - crm_query
+    - crm_get_record
+    - crm_search
+    - crm_get_report
+    - email_read_inbox
+    - email_search
+    - calendar_list_events
+    - calendar_find_free_time
+  write_with_approval:
+    - crm_create_record
+    - crm_update_record
+    - email_send
+    - email_reply
+    - calendar_create_event
+  never:
+    - crm_delete_record  # Requires ws:admin
+
+schedules:
+  - name: "Morning Pipeline Brief"
+    cron: "0 8 * * 1-5"
+    timezone: "{{org_timezone}}"
+    action: |
+      Generate today's pipeline brief:
+      1. New leads from the last 24 hours
+      2. Deals closing this week — any at risk?
+      3. Overdue follow-ups
+      4. Key meetings today
+      Keep it under 300 words. Use bullet points.
+    deliver_to: "{{primary_channel}}"
+
+  - name: "Weekly Forecast"
+    cron: "0 9 * * 1"
+    timezone: "{{org_timezone}}"
+    action: |
+      Generate the weekly sales forecast:
+      1. Pipeline value by stage
+      2. Comparison to monthly/quarterly target
+      3. Top 5 deals by value
+      4. Risks and recommendations
+      Format as a report suitable for leadership.
+    deliver_to: "{{admin_email}}"
+
+  - name: "Follow-up Nudge"
+    cron: "0 14 * * 1-5"
+    timezone: "{{org_timezone}}"
+    action: |
+      Check for any deals with follow-up tasks overdue by 2+ days.
+      Send a friendly nudge to the deal owner with context.
+    deliver_to: "{{primary_channel}}"
+
+memory_seeds:
+  - key: "sales_process"
+    value: |
+      Default sales stages: Prospecting → Qualification → Proposal →
+      Negotiation → Closed Won / Closed Lost.
+      Customize this for your team's actual process.
+  - key: "follow_up_policy"
+    value: |
+      Follow-up SLA: Inbound leads within 1 hour.
+      Existing deals: weekly touch minimum.
+      At-risk deals: daily review.

@@ -1,0 +1,111 @@
+# OmniSage Agent Template: Executive Brief
+# Cross-functional intelligence agent for leadership
+
+name: "Executive Intelligence"
+description: "Daily/weekly business summaries, cross-department visibility, strategic support"
+icon: "🎯"
+
+agent:
+  name: "SageBot — Executive"
+  model: "claude-sonnet-4"
+  personality: |
+    You are the Executive Intelligence agent for {{org_name}}.
+
+    Your role:
+    - Synthesize information across all departments into actionable briefs
+    - Surface anomalies, risks, and opportunities
+    - Prepare board meeting materials and investor updates
+    - Answer strategic questions with cross-functional data
+
+    Your style:
+    - Executive-level communication: clear, concise, insight-driven
+    - Lead with the "so what" — why does this data matter?
+    - Flag decisions needed, not just information
+    - Use charts/tables for financial data when possible
+
+    You have READ-ONLY access to summaries from all workspaces.
+    You cannot take actions in other departments' systems.
+
+required_integrations:
+  - email
+  - calendar
+
+optional_integrations:
+  - slack
+
+tools:
+  read:
+    # Cross-workspace summary access (read-only)
+    - workspace_summary  # Aggregated KPIs from all workspaces
+    - email_read_inbox
+    - calendar_list_events
+    - calendar_find_free_time
+  write_with_approval:
+    - email_send
+    - email_draft
+    - calendar_create_event
+
+special_permissions:
+  # This agent can read summary-level data from all workspaces
+  cross_workspace_read:
+    access: summary_only  # Cannot read individual records
+    workspaces: ["*"]
+
+schedules:
+  - name: "Daily Executive Brief"
+    cron: "0 7 * * 1-5"
+    timezone: "{{org_timezone}}"
+    action: |
+      Generate today's executive brief:
+
+      ## Key Metrics (24h)
+      - Revenue: new bookings, pipeline movement
+      - Support: ticket volume, CSAT, escalations
+      - Finance: cash position, outstanding invoices
+      - Team: PTO today, new hires starting
+
+      ## Attention Required
+      - Decisions needed today
+      - Risks flagged by department agents
+      - Anomalies detected
+
+      ## Today's Calendar
+      - Key meetings and prep needed
+
+      Keep it scannable. Lead with what matters.
+    deliver_to: "{{admin_email}}"
+
+  - name: "Weekly Business Review"
+    cron: "0 8 * * 1"
+    timezone: "{{org_timezone}}"
+    action: |
+      Generate the Weekly Business Review:
+
+      ## Performance vs Targets
+      - Revenue (MTD, QTD, trend)
+      - Customer metrics (NPS, churn, expansion)
+      - Operational efficiency
+
+      ## Wins
+      - Notable achievements across departments
+
+      ## Risks & Blockers
+      - Cross-functional issues
+      - Resource constraints
+      - External factors
+
+      ## This Week's Priorities
+      - Top 3 items requiring leadership attention
+
+      Format for leadership team distribution.
+    deliver_to: "{{primary_channel}}"
+
+  - name: "Monthly Board Prep"
+    cron: "0 9 25 * *"
+    timezone: "{{org_timezone}}"
+    action: |
+      Begin preparing the monthly board report.
+      Pull key metrics from all departments.
+      Flag any items that need CEO input before the report is finalized.
+      Draft the executive summary section.
+    deliver_to: "{{admin_email}}"

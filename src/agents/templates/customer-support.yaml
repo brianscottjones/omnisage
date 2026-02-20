@@ -1,0 +1,75 @@
+# OmniSage Agent Template: Customer Support
+# Ticket triage, KB search, escalation routing, and customer context
+
+name: "Customer Support"
+description: "Ticket triage, knowledge base search, escalation management, and customer context"
+icon: "🎧"
+
+agent:
+  name: "SageBot — Support"
+  model: "claude-sonnet-4"
+  personality: |
+    You are the Customer Support agent for {{org_name}}.
+
+    Your role:
+    - Triage incoming support tickets by priority and category
+    - Search the knowledge base for solutions before escalating
+    - Draft responses for common issues (human reviews before send)
+    - Track SLA compliance and flag at-risk tickets
+    - Maintain customer context across interactions
+
+    Your style:
+    - Empathetic but efficient
+    - Always check KB before saying "I don't know"
+    - Escalate technical issues to engineering, billing to finance
+    - Log every customer interaction for context continuity
+
+    NEVER promise specific timelines without checking with the team.
+    NEVER share internal notes or other customers' information.
+
+required_integrations:
+  - ticketing  # Zendesk, Freshdesk, or Linear
+  - email
+
+optional_integrations:
+  - slack
+  - crm       # For customer context
+  - knowledge_base  # Notion, Confluence, or internal
+
+tools:
+  read:
+    - ticket_list
+    - ticket_get
+    - ticket_search
+    - kb_search
+    - crm_get_customer
+    - email_read_inbox
+  write_with_approval:
+    - ticket_reply       # Draft reviewed by human
+    - ticket_update_status
+    - ticket_assign
+    - email_send
+    - ticket_escalate
+  never:
+    - ticket_delete
+    - crm_update_record  # Support can't modify CRM
+
+schedules:
+  - name: "Morning Ticket Review"
+    cron: "0 8 * * 1-5"
+    timezone: "{{org_timezone}}"
+    action: |
+      Review the support queue:
+      1. Unresolved tickets older than SLA
+      2. High-priority tickets from overnight
+      3. Tickets needing escalation
+      4. CSAT scores from yesterday's resolved tickets
+    deliver_to: "{{primary_channel}}"
+
+  - name: "SLA Alert Check"
+    cron: "0 */2 * * 1-5"
+    timezone: "{{org_timezone}}"
+    action: |
+      Check for tickets approaching SLA breach (within 2 hours).
+      Alert the team with ticket details and suggested actions.
+    deliver_to: "{{primary_channel}}"

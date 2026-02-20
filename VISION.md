@@ -1,110 +1,178 @@
-## OpenClaw Vision
+# OmniSage Vision
 
-OpenClaw is the AI that actually does things.
-It runs on your devices, in your channels, with your rules.
+## What Is OmniSage?
 
-This document explains the current state and direction of the project.
-We are still early, so iteration is fast.
-Project overview and developer docs: [`README.md`](README.md)
-Contribution guide: [`CONTRIBUTING.md`](CONTRIBUTING.md)
+OmniSage is a secure, self-hosted AI operations platform for small-to-medium businesses (SMBs). Built on the foundation of [OpenClaw](https://github.com/openclaw/openclaw), OmniSage transforms personal AI assistant technology into a multi-user, role-aware business operations layer.
 
-OpenClaw started as a personal playground to learn AI and build something genuinely useful:
-an assistant that can run real tasks on a real computer.
-It evolved through several names and shells: Warelay -> Clawdbot -> Moltbot -> OpenClaw.
+**Think of it as:** An AI-powered operations team member that knows your business, connects your tools, automates your workflows, and never sleeps — all running on infrastructure you own and control.
 
-The goal: a personal assistant that is easy to use, supports a wide range of platforms, and respects privacy and security.
+## The Problem
 
-The current focus is:
+SMBs are drowning in SaaS tools, manual processes, and operational overhead:
 
-Priority:
+- **Fragmented communication** — Slack, email, SMS, WhatsApp, all disconnected
+- **Manual task management** — copying data between systems, chasing follow-ups
+- **No operational intelligence** — decisions made without real-time business context
+- **Security concerns** — sensitive business data scattered across third-party services
+- **AI adoption barriers** — enterprise AI is expensive; consumer AI lacks business context
 
-- Security and safe defaults
-- Bug fixes and stability
-- Setup reliability and first-run UX
+## The Solution
 
-Next priorities:
+OmniSage provides:
 
-- Supporting all major model providers
-- Improving support for major messaging channels (and adding a few high-demand ones)
-- Performance and test infrastructure
-- Better computer-use and agent harness capabilities
-- Ergonomics across CLI and web frontend
-- Companion apps on macOS, iOS, Android, Windows, and Linux
+### 🏢 Multi-Tenant Workspace
+- **Per-team/department agents** with role-based access (Sales, Ops, Finance, Support)
+- **Shared organizational memory** — company knowledge base that all agents can reference
+- **Private team contexts** — each department has its own memory, tools, and workflows
+- **User authentication** — SSO, OIDC, or local auth with granular permissions
 
-Contribution rules:
+### 🔒 Security-First Architecture
+- **Self-hosted** — your data never leaves your infrastructure
+- **Audit logging** — every agent action is logged, reviewable, and exportable
+- **Data classification** — PII detection and handling policies per workspace
+- **Approval workflows** — sensitive actions require human approval before execution
+- **Secret management** — centralized credential vault with least-privilege access
+- **SOC 2 / HIPAA alignment** — designed for compliance-sensitive industries
 
-- One PR = one issue/topic. Do not bundle multiple unrelated fixes/features.
-- PRs over ~5,000 changed lines are reviewed only in exceptional circumstances.
-- Do not open large batches of tiny PRs at once; each PR has review cost.
-- For very small related fixes, grouping into one focused PR is encouraged.
+### 🔌 Business Integration Hub
+- **CRM** — Salesforce, HubSpot, Pipedrive (read/write with approval gates)
+- **Communication** — Slack, Teams, Email, SMS, WhatsApp (unified inbox)
+- **Finance** — QuickBooks, Xero, Stripe (read-only by default, write with approval)
+- **Project Management** — Jira, Asana, Linear, Monday, Vikunja
+- **Documents** — Google Workspace, Microsoft 365, Notion, Confluence
+- **Custom APIs** — webhook-based integration builder for internal tools
 
-## Security
+### 🤖 Operational Agents
+Pre-built agent templates for common SMB roles:
 
-Security in OpenClaw is a deliberate tradeoff: strong defaults without killing capability.
-The goal is to stay powerful for real work while making risky paths explicit and operator-controlled.
+- **Sales Ops Agent** — lead scoring, pipeline updates, follow-up scheduling, competitive intel
+- **Customer Support Agent** — ticket triage, knowledge base search, escalation routing
+- **Finance Agent** — invoice processing, expense categorization, cash flow alerts
+- **HR/People Agent** — onboarding checklists, PTO tracking, policy Q&A
+- **IT/Ops Agent** — infrastructure monitoring, alert triage, runbook execution
+- **Executive Brief Agent** — daily/weekly business summaries across all departments
 
-Canonical security policy and reporting:
+### 📊 Business Intelligence Layer
+- **Cross-system dashboards** — unified metrics from all connected tools
+- **Anomaly detection** — flag unusual patterns (spending spikes, churn signals, etc.)
+- **Scheduled reports** — automated daily/weekly/monthly business reports
+- **Natural language queries** — "What were our top 5 deals last quarter?"
 
-- [`SECURITY.md`](SECURITY.md)
+## Architecture
 
-We prioritize secure defaults, but also expose clear knobs for trusted high-power workflows.
+```
+┌─────────────────────────────────────────────────┐
+│                  OmniSage Core                   │
+│  ┌──────────┐  ┌──────────┐  ┌──────────────┐  │
+│  │  Gateway  │  │  Auth &  │  │  Audit Log   │  │
+│  │  Router   │  │  RBAC    │  │  & Compliance│  │
+│  └────┬─────┘  └────┬─────┘  └──────┬───────┘  │
+│       │              │               │           │
+│  ┌────┴──────────────┴───────────────┴────────┐ │
+│  │           Agent Orchestration Layer          │ │
+│  │  ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐ ┌─────┐  │ │
+│  │  │Sales│ │ Ops │ │ Fin │ │ HR  │ │ IT  │  │ │
+│  │  │Agent│ │Agent│ │Agent│ │Agent│ │Agent│  │ │
+│  │  └──┬──┘ └──┬──┘ └──┬──┘ └──┬──┘ └──┬──┘  │ │
+│  └─────┼───────┼───────┼───────┼───────┼──────┘ │
+│        │       │       │       │       │         │
+│  ┌─────┴───────┴───────┴───────┴───────┴──────┐ │
+│  │         Shared Memory & Knowledge Base       │ │
+│  │  ┌─────────┐ ┌──────────┐ ┌─────────────┐  │ │
+│  │  │  Org    │ │  Team    │ │  Integration │  │ │
+│  │  │ Memory  │ │ Contexts │ │  Credentials │  │ │
+│  │  └─────────┘ └──────────┘ └─────────────┘  │ │
+│  └──────────────────────────────────────────────┘ │
+│                                                   │
+│  ┌──────────────────────────────────────────────┐ │
+│  │           Integration Connectors              │ │
+│  │  Salesforce │ Slack │ QuickBooks │ Jira │ ... │ │
+│  └──────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────┘
+```
 
-## Plugins & Memory
+## Deployment Models
 
-OpenClaw has an extensive plugin API.
-Core stays lean; optional capability should usually ship as plugins.
+### 1. Single-Server (5-20 employees)
+- Docker Compose on a VPS or office server
+- SQLite + file-based storage
+- Single admin, shared agent pool
+- **Cost:** $20-50/mo infrastructure + LLM API costs
 
-Preferred plugin path is npm package distribution plus local extension loading for development.
-If you build a plugin, host and maintain it in your own repository.
-The bar for adding optional plugins to core is intentionally high.
-Plugin docs: [`docs/tools/plugin.md`](docs/tools/plugin.md)
-Community plugin listing + PR bar: https://docs.openclaw.ai/plugins/community
+### 2. Team Edition (20-100 employees)
+- Docker Compose or Kubernetes
+- PostgreSQL + Redis
+- Multi-department with RBAC
+- SSO integration
+- **Cost:** $100-300/mo infrastructure + LLM API costs
 
-Memory is a special plugin slot where only one memory plugin can be active at a time.
-Today we ship multiple memory options; over time we plan to converge on one recommended default path.
+### 3. Enterprise (100+ employees)
+- Kubernetes with horizontal scaling
+- Multi-region support
+- Custom compliance modules
+- Dedicated support
+- **Cost:** Custom
 
-### Skills
+## Differentiation from OpenClaw
 
-We still ship some bundled skills for baseline UX.
-New skills should be published to ClawHub first (`clawhub.ai`), not added to core by default.
-Core skill additions should be rare and require a strong product or security reason.
+| Feature | OpenClaw | OmniSage |
+|---------|----------|----------|
+| Users | Single user | Multi-user with RBAC |
+| Memory | Personal | Org + Team + Personal |
+| Auth | Token-based | SSO/OIDC + API keys |
+| Audit | Minimal | Full audit trail |
+| Integrations | Personal tools | Business SaaS stack |
+| Agents | Single personality | Role-based agent pool |
+| Data handling | Trust-based | Policy-enforced |
+| Deployment | Personal device | Server/cloud |
+| Compliance | N/A | SOC 2 / HIPAA aligned |
 
-### MCP Support
+## Development Roadmap
 
-OpenClaw supports MCP through `mcporter`: https://github.com/steipete/mcporter
+### Phase 1: Foundation (Months 1-2)
+- [ ] Multi-user auth system (local + OIDC)
+- [ ] Role-based access control (RBAC)
+- [ ] Workspace/team isolation
+- [ ] Audit logging framework
+- [ ] Org-level shared memory
+- [ ] Admin dashboard (web UI)
 
-This keeps MCP integration flexible and decoupled from core runtime:
+### Phase 2: Business Integrations (Months 2-4)
+- [ ] Slack connector (full bi-directional)
+- [ ] Email connector (IMAP/SMTP + OAuth)
+- [ ] CRM connector (Salesforce, HubSpot)
+- [ ] Calendar connector (Google, Microsoft)
+- [ ] Webhook builder for custom integrations
 
-- add or change MCP servers without restarting the gateway
-- keep core tool/context surface lean
-- reduce MCP churn impact on core stability and security
+### Phase 3: Operational Agents (Months 3-5)
+- [ ] Agent template system
+- [ ] Sales Ops agent template
+- [ ] Customer Support agent template
+- [ ] Executive Brief agent template
+- [ ] Approval workflow engine
 
-For now, we prefer this bridge model over building first-class MCP runtime into core.
-If there is an MCP server or feature `mcporter` does not support yet, please open an issue there.
+### Phase 4: Intelligence & Reporting (Months 4-6)
+- [ ] Cross-system dashboard builder
+- [ ] Scheduled report generation
+- [ ] Anomaly detection engine
+- [ ] Natural language business queries
 
-### Setup
+### Phase 5: Compliance & Scale (Months 5-8)
+- [ ] SOC 2 compliance toolkit
+- [ ] HIPAA data handling module
+- [ ] Kubernetes deployment configs
+- [ ] Multi-region support
+- [ ] Enterprise SSO (SAML)
 
-OpenClaw is currently terminal-first by design.
-This keeps setup explicit: users see docs, auth, permissions, and security posture up front.
+## Naming
 
-Long term, we want easier onboarding flows as hardening matures.
-We do not want convenience wrappers that hide critical security decisions from users.
+**OmniSage** — *Omni* (all-encompassing) + *Sage* (wise advisor). An AI that sees across your entire business and provides wise counsel.
 
-### Why TypeScript?
+## License
 
-OpenClaw is primarily an orchestration system: prompts, tools, protocols, and integrations.
-TypeScript was chosen to keep OpenClaw hackable by default.
-It is widely known, fast to iterate in, and easy to read, modify, and extend.
+AGPL-3.0 (keeps it open while requiring derivative works to share improvements).
+Fork of OpenClaw (MIT) — we adopt AGPL for the business layer additions.
 
-## What We Will Not Merge (For Now)
+---
 
-- New core skills when they can live on ClawHub
-- Full-doc translation sets for all docs (deferred; we plan AI-generated translations later)
-- Commercial service integrations that do not clearly fit the model-provider category
-- Wrapper channels around already supported channels without a clear capability or security gap
-- First-class MCP runtime in core when `mcporter` already provides the integration path
-- Agent-hierarchy frameworks (manager-of-managers / nested planner trees) as a default architecture
-- Heavy orchestration layers that duplicate existing agent and tool infrastructure
-
-This list is a roadmap guardrail, not a law of physics.
-Strong user demand and strong technical rationale can change it.
+*Built by humans who got tired of being the glue between 15 different SaaS tools.*
